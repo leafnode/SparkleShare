@@ -79,7 +79,16 @@ namespace SparkleShare {
             process.StartInfo.CreateNoWindow        = true;
             process.StartInfo.RedirectStandardError = true;
 
-            process.Start ();
+            try
+            {
+                process.Start();
+            }
+            catch (Exception e)
+            {
+                SparkleLogger.LogInfo("Auth", "Could not run 'ssh-add': "+e.Message);
+                throw e;
+            }
+
             process.WaitForExit ();
 
             if (process.ExitCode == 0)
