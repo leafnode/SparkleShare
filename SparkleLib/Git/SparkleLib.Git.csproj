@@ -20,6 +20,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
@@ -46,7 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SparkleFetcherGit.cs" />
-    <Compile Include="SparkleGit.cs" />
+    <Compile Include="SparkleGit.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SparkleRepoGit.cs" />
   </ItemGroup>
 </Project>

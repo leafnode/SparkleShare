@@ -54,7 +54,13 @@ namespace SparkleShare {
             // Add msysgit to path, as we cannot asume it is added to the path
             // Asume it is installed in @"<exec dir>\msysgit\bin"
             string executable_path = Path.GetDirectoryName (Forms.Application.ExecutablePath);
-            string msysgit_path    = Path.Combine (executable_path, "msysgit");
+            string msysgit_path;
+
+#if DEBUG
+            msysgit_path = Path.Combine(Path.GetFullPath(executable_path+ @"\.."), "msysgit");
+#else
+            msysgit_path = Path.Combine (executable_path, "msysgit");
+#endif
 
             string new_PATH = msysgit_path + @"\bin" + ";" +
                 msysgit_path + @"\mingw\bin" + ";" +
