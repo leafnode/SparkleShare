@@ -85,7 +85,7 @@ namespace SparkleShare {
             }
             catch (Exception e)
             {
-                SparkleLogger.LogInfo("Auth", "Could not run 'ssh-add': "+e.Message);
+                SparkleLogger.LogInfo("Auth", "Could not run 'ssh-add': "+e.Message+". Do you have msysgit in SparkleShare directory?");
                 throw e;
             }
 
