@@ -18,8 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 using Timers = System.Timers;
@@ -35,6 +33,8 @@ namespace SparkleLib {
 
 
     public abstract class SparkleRepoBase {
+
+        public static bool UseCustomWatcher = false;
 
         public abstract string CurrentRevision { get; }
         public abstract double Size { get; }
@@ -120,7 +120,7 @@ namespace SparkleLib {
         private DateTime last_poll                = DateTime.Now;
         private DateTime progress_last_change     = DateTime.Now;
         private TimeSpan progress_change_interval = new TimeSpan (0, 0, 0, 1);
-        private Timers.Timer remote_timer = new Timers.Timer () { Interval = 5000 };
+        private Timers.Timer remote_timer         = new Timers.Timer () { Interval = 5000 };
 
         private bool is_syncing {
             get {
@@ -149,7 +149,9 @@ namespace SparkleLib {
                 Status = status;
             };
 
-            this.watcher = new SparkleWatcher (LocalPath);
+            if (!UseCustomWatcher)
+                this.watcher = new SparkleWatcher (LocalPath);
+
             new Thread (() => CreateListener ()).Start ();
 
             this.remote_timer.Elapsed += delegate {
@@ -176,7 +178,8 @@ namespace SparkleLib {
 
         public void Initialize ()
         {
-            this.watcher.ChangeEvent += OnFileActivity;
+            if (!UseCustomWatcher)
+                this.watcher.ChangeEvent += OnFileActivity;
 
             // Sync up everything that changed
             // since we've been offline
@@ -213,7 +216,9 @@ namespace SparkleLib {
                 return;
 
             IsBuffering = true;
-            this.watcher.Disable ();
+
+            if (!UseCustomWatcher)
+                this.watcher.Disable ();
 
             SparkleLogger.LogInfo ("Local", Name + " | Activity detected, waiting for it to settle...");
 
@@ -250,7 +255,8 @@ namespace SparkleLib {
 
             } while (IsBuffering);
 
-            this.watcher.Enable ();
+            if (!UseCustomWatcher)
+                this.watcher.Enable ();
         }
 
 
@@ -279,7 +285,8 @@ namespace SparkleLib {
 
         private void SyncUpBase ()
         {
-            this.watcher.Disable ();
+            if (!UseCustomWatcher)
+                this.watcher.Disable ();
 
             SparkleLogger.LogInfo ("SyncUp", Name + " | Initiated");
             HasUnsyncedChanges = true;
@@ -299,7 +306,8 @@ namespace SparkleLib {
                 SparkleLogger.LogInfo ("SyncUp", Name + " | Error");
                 SyncDownBase ();
 
-                this.watcher.Disable ();
+                if (!UseCustomWatcher)
+                    this.watcher.Disable ();
 
                 if (ServerOnline && SyncUp ()) {
                     HasUnsyncedChanges = false;
@@ -316,13 +324,15 @@ namespace SparkleLib {
             ProgressPercentage = 0.0;
             ProgressSpeed      = "";
 
-            this.watcher.Enable ();
+            if (!UseCustomWatcher)
+                this.watcher.Enable ();
         }
 
 
         private void SyncDownBase ()
         {
-            this.watcher.Disable ();
+            if (!UseCustomWatcher)
+                this.watcher.Disable ();
 
             SparkleLogger.LogInfo ("SyncDown", Name + " | Initiated");
 
@@ -373,7 +383,8 @@ namespace SparkleLib {
             ProgressPercentage = 0.0;
             ProgressSpeed      = "";
 
-            this.watcher.Enable ();
+            if (!UseCustomWatcher)
+                this.watcher.Enable ();
 
             SyncStatusChanged (SyncStatus.Idle);
         }
@@ -489,7 +500,8 @@ namespace SparkleLib {
             this.listener.Disconnected         -= ListenerDisconnectedDelegate;
             this.listener.AnnouncementReceived -= ListenerAnnouncementReceivedDelegate;
 
-            this.watcher.Dispose ();
+            if (!UseCustomWatcher)
+                this.watcher.Dispose ();
         }
     }
 }

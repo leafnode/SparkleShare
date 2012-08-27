@@ -16,11 +16,7 @@
 
 
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Timers;
-using System.Collections.Generic;
 
 using Gtk;
 using Mono.Unix;
@@ -69,7 +65,10 @@ namespace SparkleShare {
                                 Xalign    = 1
                             };
 
-                            Entry name_entry = new Entry (UnixUserInfo.GetRealUser ().RealName) {
+                            string username = UnixUserInfo.GetRealUser ().RealName;
+                            username        = username.TrimEnd (",".ToCharArray ());
+
+                            Entry name_entry = new Entry (username) {
                                 Xalign = 0,
                                 ActivatesDefault = true
                             };
@@ -402,7 +401,7 @@ namespace SparkleShare {
                     case PageType.Syncing: {
 
                         Header      = String.Format ("Adding project ‘{0}’…", Controller.SyncingFolder);
-                        Description = "This may either take a short or a long time depending on the project's size.";
+                        Description = "This may take a while for large projects.\nIsn't it coffee-o'clock?";
 
                         this.progress_bar.Fraction = Controller.ProgressBarPercentage / 100;
 
@@ -444,9 +443,9 @@ namespace SparkleShare {
                         Header = "Oops! Something went wrong" + "…";
 
                         VBox points = new VBox (false, 0);
-                        Image list_point_one   = new Image (SparkleUIHelpers.GetIcon ("go-next", 16));
-                        Image list_point_two   = new Image (SparkleUIHelpers.GetIcon ("go-next", 16));
-                        Image list_point_three = new Image (SparkleUIHelpers.GetIcon ("go-next", 16));
+                        Image list_point_one   = new Image (SparkleUIHelpers.GetIcon ("list-point", 16));
+                        Image list_point_two   = new Image (SparkleUIHelpers.GetIcon ("list-point", 16));
+                        Image list_point_three = new Image (SparkleUIHelpers.GetIcon ("list-point", 16));
 
                         Label label_one = new Label () {
                             Markup = "<b>" + Controller.PreviousUrl + "</b> is the address we've compiled. " +

@@ -36,6 +36,10 @@ namespace SparkleShare {
         {
             string xml = "";
 
+            // Windows sometimes doesn't strip off protocol handlers            
+            url = url.Replace ("sparkleshare-unsafe:", "");
+            url = url.Replace ("sparkleshare:", "");
+
             WebClient web_client = new WebClient ();
 
             try {
@@ -48,7 +52,7 @@ namespace SparkleShare {
 
             string file_name = DateTime.UtcNow.Millisecond.ToString () + ".xml";
 
-            string home_path   = Environment.GetFolderPath (Environment.SpecialFolder.Personal);
+            string home_path   = Environment.GetFolderPath (Environment.SpecialFolder.UserProfile);
             string target_path = Path.Combine (home_path, "SparkleShare", file_name);
 
             if (xml.Contains ("<sparkleshare>")) {

@@ -29,8 +29,6 @@ namespace SparkleShare {
 
         public SparkleStatusIconController Controller = new SparkleStatusIconController ();
 
-        private Gdk.Pixbuf [] animation_frames;
-
         private Menu menu;
         private MenuItem recent_events_item;
         private MenuItem quit_item;
@@ -40,20 +38,21 @@ namespace SparkleShare {
         private ApplicationIndicator indicator;
         #else
         private StatusIcon status_icon;
+		private Gdk.Pixbuf [] animation_frames;
         #endif
 
 
         public SparkleStatusIcon ()
         {
-            CreateAnimationFrames ();
-
             #if HAVE_APP_INDICATOR
             this.indicator = new ApplicationIndicator ("sparkleshare",
                 "process-syncing-i", Category.ApplicationStatus);
 
             this.indicator.Status = Status.Active;
             #else
-            this.status_icon        = new StatusIcon ();
+            CreateAnimationFrames ();
+			
+			this.status_icon        = new StatusIcon ();
             this.status_icon.Pixbuf = this.animation_frames [0];
 
             this.status_icon.Activate  += ShowMenu; // Primary mouse button click
@@ -135,7 +134,7 @@ namespace SparkleShare {
             this.menu.Add (new SeparatorMenuItem ());
 
                 ImageMenuItem folder_item = new SparkleMenuItem ("SparkleShare"){
-                    Image = new Image (SparkleUIHelpers.GetIcon ("folder-sparkleshare", 16))
+                    Image = new Image (SparkleUIHelpers.GetIcon ("sparkleshare", 16))
                 };
 
                 folder_item.Activated += delegate {
@@ -278,7 +277,8 @@ namespace SparkleShare {
             };
         }
 
-
+		
+		#if !HAVE_APP_INDICATOR
         private void CreateAnimationFrames ()
         {
             this.animation_frames = new Gdk.Pixbuf [] {
@@ -289,7 +289,8 @@ namespace SparkleShare {
                 SparkleUIHelpers.GetIcon ("process-syncing-iiiii", 24)
             };
         }
-
+		#endif
+		
 
         #if !HAVE_APP_INDICATOR
         // Makes the menu visible
