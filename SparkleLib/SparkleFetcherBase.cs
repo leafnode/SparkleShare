@@ -42,6 +42,7 @@ namespace SparkleLib {
         public abstract bool IsFetchedRepoEmpty { get; }
         public abstract bool IsFetchedRepoPasswordCorrect (string password);
         public abstract void EnableFetchedRepoCrypto (string password);
+        protected abstract Process GetChildProcess();
 
         public Uri RemoteUrl { get; protected set; }
         public string RequiredFingerprint { get; protected set; }
@@ -62,6 +63,7 @@ namespace SparkleLib {
             }
         }
 
+        private Job job;
         
         protected List<string> warnings = new List<string> ();
         protected List<string> errors   = new List<string> ();
@@ -173,6 +175,10 @@ namespace SparkleLib {
             });
 
             this.thread.Start ();
+            Thread.Sleep(1000);
+            this.job = new Job();
+            Process child = GetChildProcess();
+            this.job.AddProcess(child.Id);
         }
 
 
@@ -242,8 +248,13 @@ namespace SparkleLib {
         public void Dispose ()
         {
             if (this.thread != null) {
+                if (this.job != null)
+                    this.job.Close();
                 this.thread.Abort ();
-                this.thread.Join ();
+                Thread.Sleep(500);
+                Process child = GetChildProcess();
+                if (child != null)
+                    child.Kill();
             }
         }
 
@@ -271,10 +282,14 @@ namespace SparkleLib {
 
             process.Start ();
 
+            Job j = new Job();
+            j.AddProcess(process.Id);
+
             // Reading the standard output HAS to go before
             // WaitForExit, or it will hang forever on output > 4096 bytes
             string host_key = process.StandardOutput.ReadToEnd ().Trim ();
             process.WaitForExit ();
+            j.Dispose();
 
             if (process.ExitCode == 0)
                 return host_key;
@@ -332,5 +347,6 @@ namespace SparkleLib {
             if (warn)
                 this.warnings.Add ("The following host key has been accepted:\n" + GetFingerprint (host_key));
         }
+
     }
 }

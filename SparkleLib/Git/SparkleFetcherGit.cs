@@ -32,7 +32,6 @@ namespace SparkleLib.Git {
         private bool use_git_bin;
         private string crypto_salt = "e0d592768d7cf99a"; // TODO: Make unique per repo
 
-
         public SparkleFetcher (string server, string required_fingerprint, string remote_path,
             string target_folder, bool fetch_prior_history) : base (server, required_fingerprint,
                 remote_path, target_folder, fetch_prior_history)
@@ -392,5 +391,11 @@ namespace SparkleLib.Git {
                 this.warnings.Add ("You seem to have a system wide ‘gitignore’ file, this may affect SparkleShare files.");
             */
         }
+
+        protected override Process GetChildProcess()
+        {
+            return this.git;
+        }
+
     }
 }
