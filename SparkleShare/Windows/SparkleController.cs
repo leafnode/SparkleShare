@@ -197,20 +197,20 @@ namespace SparkleShare {
 
         private void StartSSH ()
         {
-            string auth_agent_pid = Environment.GetEnvironmentVariable("SSH_AGENT_PID");
+            string auth_agent_pid = Environment.GetEnvironmentVariable ("SSH_AGENT_PID");
 
             if (!string.IsNullOrEmpty (auth_agent_pid)) {
-                SparkleLogger.LogInfo("Controller", "Trying existing ssh-agent with PID=" + auth_agent_pid);
+                SparkleLogger.LogInfo ("Controller", "Trying to use existing ssh-agent with PID=" + auth_agent_pid + "...");
                 this.ssh_agent_pid = Convert.ToInt32(auth_agent_pid);
-                try
-                {
-                    Process ssh_agent = Process.GetProcessById(this.ssh_agent_pid);
-                    SparkleLogger.LogInfo("Controller", "Using existing ssh-agent with PID=" + this.ssh_agent_pid);
+                
+                try {
+                    Process ssh_agent = Process.GetProcessById (this.ssh_agent_pid);
+                    SparkleLogger.LogInfo ("Controller", "Using existing ssh-agent with PID=" + this.ssh_agent_pid);
+
                     return;
-                }
-                catch (ArgumentException e)
-                {
-                    SparkleLogger.LogInfo("Controller", "ssh-agent with PID=" + auth_agent_pid + " does not exist. Starting a new one");
+
+                } catch (ArgumentException) {
+                    SparkleLogger.LogInfo ("Controller", "ssh-agent with PID=" + auth_agent_pid + " does not exist. Starting a new one...");
                 }
             }
 
